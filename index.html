@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="zh-CN">
 
@@ -109,7 +110,12 @@ body::before {
 
     filter: blur(60px);
 
-    animation: backgroundFlow 18s ease-in-out infinite alternate;
+    animation:
+        backgroundFlow
+        18s
+        ease-in-out
+        infinite
+        alternate;
 
 }
 
@@ -247,31 +253,19 @@ body::after {
     padding: 22px;
 
     border:
-
         1px solid
         rgba(255,255,255,0.14);
 
     border-radius: 24px;
 
-    /*
-       玻璃透明度
-    */
-
     background:
-
         rgba(20,22,28,0.52);
 
-    /*
-       高斯模糊
-    */
-
     backdrop-filter:
-
         blur(30px)
         saturate(150%);
 
     -webkit-backdrop-filter:
-
         blur(30px)
         saturate(150%);
 
@@ -296,7 +290,6 @@ body::after {
 .player:hover {
 
     background:
-
         rgba(25,27,34,0.58);
 
     box-shadow:
@@ -350,7 +343,6 @@ body::after {
         );
 
     border:
-
         1px solid
         rgba(255,255,255,0.12);
 
@@ -457,7 +449,6 @@ button:active {
     border-radius: 50%;
 
     background:
-
         rgba(255,255,255,0.08);
 
 }
@@ -466,7 +457,6 @@ button:active {
 .control-btn:hover {
 
     background:
-
         rgba(255,255,255,0.15);
 
 }
@@ -488,37 +478,159 @@ button:active {
 }
 
 
+/* =========================
+   Progress Container
+========================= */
+
 .progress-container {
 
     flex: 1;
 
-    height: 5px;
+    height: 6px;
 
     border-radius: 10px;
 
     background:
-
-        rgba(255,255,255,0.1);
+        rgba(255,255,255,0.10);
 
     cursor: pointer;
 
     overflow: hidden;
 
+    position: relative;
+
 }
 
 
+/* =========================
+   Gradient Progress
+========================= */
+
 .progress {
+
+    position: relative;
 
     width: 0%;
 
     height: 100%;
 
-    background: white;
-
     border-radius: inherit;
+
+    overflow: hidden;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            #4f7cff,
+            #8b5cf6,
+            #d946ef,
+            #22d3ee
+        );
+
+    background-size: 200% 100%;
+
+    animation:
+        progressGradient
+        3s
+        linear
+        infinite;
+
+    box-shadow:
+
+        0 0 8px
+        rgba(100,140,255,0.65),
+
+        0 0 18px
+        rgba(150,100,255,0.30);
+
+    transition:
+        width 0.15s linear;
 
 }
 
+
+/* =========================
+   Gradient Animation
+========================= */
+
+@keyframes progressGradient {
+
+    0% {
+
+        background-position:
+            0% 50%;
+
+    }
+
+    100% {
+
+        background-position:
+            200% 50%;
+
+    }
+
+}
+
+
+/* =========================
+   Progress Shine
+========================= */
+
+.progress::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    bottom: 0;
+
+    left: -90px;
+
+    width: 90px;
+
+    background:
+
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,0.75),
+            transparent
+        );
+
+    filter: blur(2px);
+
+    animation:
+        progressShine
+        2s
+        linear
+        infinite;
+
+}
+
+
+@keyframes progressShine {
+
+    0% {
+
+        left: -90px;
+
+    }
+
+    100% {
+
+        left: 100%;
+
+    }
+
+}
+
+
+/* =========================
+   Time
+========================= */
 
 .time {
 
@@ -530,7 +642,8 @@ button:active {
 
     color: var(--subtext);
 
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric:
+        tabular-nums;
 
 }
 
@@ -561,11 +674,9 @@ button:active {
     border-radius: 15px;
 
     background:
-
         rgba(255,255,255,0.035);
 
     border:
-
         1px solid transparent;
 
     cursor: pointer;
@@ -582,10 +693,10 @@ button:active {
 .song:hover {
 
     background:
-
         rgba(255,255,255,0.10);
 
-    transform: translateX(2px);
+    transform:
+        translateX(2px);
 
 }
 
@@ -593,11 +704,9 @@ button:active {
 .song.active {
 
     background:
-
         rgba(255,255,255,0.09);
 
     border-color:
-
         rgba(255,255,255,0.12);
 
 }
@@ -608,12 +717,12 @@ button:active {
     width: 35px;
 
     color:
-
         rgba(255,255,255,0.35);
 
     font-size: 13px;
 
-    font-variant-numeric: tabular-nums;
+    font-variant-numeric:
+        tabular-nums;
 
 }
 
@@ -626,7 +735,6 @@ button:active {
     border-radius: 10px;
 
     background:
-
         rgba(255,255,255,0.07);
 
     display: flex;
@@ -680,7 +788,6 @@ button:active {
 .song-play {
 
     color:
-
         rgba(255,255,255,0.45);
 
     font-size: 14px;
@@ -706,7 +813,6 @@ button:active {
 .volume-icon {
 
     color:
-
         rgba(255,255,255,0.5);
 
     font-size: 14px;
@@ -727,7 +833,6 @@ input[type="range"] {
     border-radius: 10px;
 
     background:
-
         rgba(255,255,255,0.1);
 
     cursor: pointer;
@@ -764,7 +869,6 @@ input[type="range"]::-webkit-slider-thumb {
     text-align: center;
 
     color:
-
         rgba(255,255,255,0.3);
 
     font-size: 12px;
@@ -843,7 +947,9 @@ input[type="range"]::-webkit-slider-thumb {
 <div class="app">
 
 
-    <!-- Header -->
+    <!-- =========================
+         Header
+    ========================= -->
 
     <div class="header">
 
@@ -858,7 +964,9 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 
 
-    <!-- Player -->
+    <!-- =========================
+         Player
+    ========================= -->
 
     <div class="player">
 
@@ -919,6 +1027,8 @@ input[type="range"]::-webkit-slider-thumb {
             </button>
 
 
+            <!-- Progress -->
+
             <div
                 class="progress-container"
                 id="progressContainer"
@@ -939,6 +1049,8 @@ input[type="range"]::-webkit-slider-thumb {
                 0:00 / 0:00
             </div>
 
+
+            <!-- Volume -->
 
             <div class="volume">
 
@@ -963,7 +1075,9 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 
 
-    <!-- Playlist -->
+    <!-- =========================
+         Playlist
+    ========================= -->
 
     <div
         class="playlist"
@@ -1097,7 +1211,9 @@ const progress =
     document.getElementById("progress");
 
 const progressContainer =
-    document.getElementById("progressContainer");
+    document.getElementById(
+        "progressContainer"
+    );
 
 const trackName =
     document.getElementById("trackName");
@@ -1129,16 +1245,21 @@ let currentIndex = 0;
 function formatTime(seconds) {
 
     if (!isFinite(seconds)) {
+
         return "0:00";
+
     }
+
 
     const minutes =
         Math.floor(seconds / 60);
+
 
     const secs =
         Math.floor(seconds % 60)
         .toString()
         .padStart(2, "0");
+
 
     return `${minutes}:${secs}`;
 
@@ -1149,18 +1270,26 @@ function formatTime(seconds) {
    Load Song
 ============================================ */
 
-function loadSong(index, autoplay = false) {
+function loadSong(
+    index,
+    autoplay = false
+) {
 
     currentIndex = index;
+
 
     const song =
         songs[currentIndex];
 
+
     audio.src =
-        MUSIC_PATH + song.file;
+        MUSIC_PATH +
+        song.file;
+
 
     trackName.textContent =
         song.name;
+
 
     trackSource.textContent =
         "PouMusic · " +
@@ -1168,6 +1297,15 @@ function loadSong(index, autoplay = false) {
         .split(".")
         .pop()
         .toUpperCase();
+
+
+    progress.style.width =
+        "0%";
+
+
+    time.textContent =
+        "0:00 / 0:00";
+
 
     updatePlaylist();
 
@@ -1206,61 +1344,72 @@ function createPlaylist() {
     playlist.innerHTML = "";
 
 
-    songs.forEach((song, index) => {
+    songs.forEach(
+        (song, index) => {
 
-        const item =
-            document.createElement("div");
-
-        item.className = "song";
-
-        item.dataset.index = index;
+            const item =
+                document.createElement(
+                    "div"
+                );
 
 
-        item.innerHTML = `
+            item.className =
+                "song";
 
-            <div class="song-number">
-                ${String(index + 1).padStart(2, "0")}
-            </div>
 
-            <div class="song-icon">
-                ♪
-            </div>
+            item.dataset.index =
+                index;
 
-            <div class="song-info">
 
-                <div class="song-title">
-                    ${song.name}
+            item.innerHTML = `
+
+                <div class="song-number">
+                    ${String(index + 1).padStart(2, "0")}
                 </div>
 
-                <div class="song-type">
-                    ${song.file
-                        .split(".")
-                        .pop()
-                        .toUpperCase()}
+                <div class="song-icon">
+                    ♪
                 </div>
 
-            </div>
+                <div class="song-info">
 
-            <div class="song-play">
-                ▶
-            </div>
+                    <div class="song-title">
+                        ${song.name}
+                    </div>
 
-        `;
+                    <div class="song-type">
+                        ${song.file
+                            .split(".")
+                            .pop()
+                            .toUpperCase()}
+                    </div>
+
+                </div>
+
+                <div class="song-play">
+                    ▶
+                </div>
+
+            `;
 
 
-        item.addEventListener(
-            "click",
-            () => {
+            item.addEventListener(
+                "click",
+                () => {
 
-                loadSong(index, true);
+                    loadSong(
+                        index,
+                        true
+                    );
 
-            }
-        );
+                }
+            );
 
 
-        playlist.appendChild(item);
+            playlist.appendChild(item);
 
-    });
+        }
+    );
 
 
     updatePlaylist();
@@ -1271,24 +1420,34 @@ function createPlaylist() {
 function updatePlaylist() {
 
     const items =
-        playlist.querySelectorAll(".song");
+        playlist.querySelectorAll(
+            ".song"
+        );
 
 
-    items.forEach((item, index) => {
+    items.forEach(
+        (item, index) => {
 
-        if (index === currentIndex) {
+            if (
+                index === currentIndex
+            ) {
 
-            item.classList.add("active");
+                item.classList.add(
+                    "active"
+                );
+
+            }
+
+            else {
+
+                item.classList.remove(
+                    "active"
+                );
+
+            }
 
         }
-
-        else {
-
-            item.classList.remove("active");
-
-        }
-
-    });
+    );
 
 }
 
@@ -1301,7 +1460,10 @@ function togglePlay() {
 
     if (!audio.src) {
 
-        loadSong(currentIndex, true);
+        loadSong(
+            currentIndex,
+            true
+        );
 
         return;
 
@@ -1327,13 +1489,15 @@ function updatePlayButton() {
 
     if (audio.paused) {
 
-        playBtn.textContent = "▶";
+        playBtn.textContent =
+            "▶";
 
     }
 
     else {
 
-        playBtn.textContent = "Ⅱ";
+        playBtn.textContent =
+            "Ⅱ";
 
     }
 
@@ -1374,7 +1538,10 @@ function nextSong() {
     currentIndex++;
 
 
-    if (currentIndex >= songs.length) {
+    if (
+        currentIndex >=
+        songs.length
+    ) {
 
         currentIndex = 0;
 
@@ -1398,13 +1565,17 @@ audio.addEventListener(
     () => {
 
         if (!audio.duration) {
+
             return;
+
         }
 
 
         const percent =
-            (audio.currentTime /
-            audio.duration) * 100;
+            (
+                audio.currentTime /
+                audio.duration
+            ) * 100;
 
 
         progress.style.width =
@@ -1419,12 +1590,18 @@ audio.addEventListener(
 );
 
 
+/* ============================================
+   Progress Click
+============================================ */
+
 progressContainer.addEventListener(
     "click",
     event => {
 
         if (!audio.duration) {
+
             return;
+
         }
 
 
@@ -1434,12 +1611,20 @@ progressContainer.addEventListener(
 
 
         const percent =
-            (event.clientX - rect.left) /
-            rect.width;
+            (
+                event.clientX -
+                rect.left
+            ) / rect.width;
 
 
         audio.currentTime =
-            percent * audio.duration;
+            Math.max(
+                0,
+                Math.min(
+                    1,
+                    percent
+                )
+            ) * audio.duration;
 
     }
 );
@@ -1508,7 +1693,9 @@ document.addEventListener(
     "keydown",
     event => {
 
-        if (event.code === "Space") {
+        if (
+            event.code === "Space"
+        ) {
 
             event.preventDefault();
 
@@ -1517,16 +1704,36 @@ document.addEventListener(
         }
 
 
-        if (event.code === "ArrowRight") {
+        if (
+            event.code === "ArrowRight"
+        ) {
 
-            audio.currentTime += 5;
+            if (audio.duration) {
+
+                audio.currentTime =
+                    Math.min(
+                        audio.duration,
+                        audio.currentTime + 5
+                    );
+
+            }
 
         }
 
 
-        if (event.code === "ArrowLeft") {
+        if (
+            event.code === "ArrowLeft"
+        ) {
 
-            audio.currentTime -= 5;
+            if (audio.duration) {
+
+                audio.currentTime =
+                    Math.max(
+                        0,
+                        audio.currentTime - 5
+                    );
+
+            }
 
         }
 
@@ -1542,7 +1749,10 @@ audio.volume = 0.8;
 
 createPlaylist();
 
-loadSong(0, false);
+loadSong(
+    0,
+    false
+);
 
 
 /* ============================================
@@ -1550,7 +1760,10 @@ loadSong(0, false);
 ============================================ */
 
 const snowCanvas =
-    document.getElementById("snowCanvas");
+    document.getElementById(
+        "snowCanvas"
+    );
+
 
 const snowCtx =
     snowCanvas.getContext("2d");
@@ -1578,6 +1791,7 @@ function resizeSnow() {
     snowWidth =
         window.innerWidth;
 
+
     snowHeight =
         window.innerHeight;
 
@@ -1585,12 +1799,14 @@ function resizeSnow() {
     snowCanvas.width =
         snowWidth * ratio;
 
+
     snowCanvas.height =
         snowHeight * ratio;
 
 
     snowCanvas.style.width =
         snowWidth + "px";
+
 
     snowCanvas.style.height =
         snowHeight + "px";
@@ -1682,7 +1898,7 @@ function createSnow() {
    Draw Snow
 -------------------------------------------- */
 
-function drawSnow(time) {
+function drawSnow() {
 
     snowCtx.clearRect(
         0,
@@ -1701,7 +1917,9 @@ function drawSnow(time) {
 
         snow.x +=
             snow.drift +
-            Math.sin(snow.phase) * 0.15;
+            Math.sin(
+                snow.phase
+            ) * 0.15;
 
 
         snow.y +=
@@ -1714,6 +1932,7 @@ function drawSnow(time) {
         ) {
 
             snow.y = -10;
+
 
             snow.x =
                 Math.random() *
@@ -1794,9 +2013,9 @@ requestAnimationFrame(
     drawSnow
 );
 
-
 </script>
 
 </body>
 
 </html>
+```
