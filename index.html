@@ -447,7 +447,41 @@
                 padding: 12px;
             }
         }
-    </style>
+    
+/* ===== Apple Music Dynamic Visualizer ===== */
+
+body{
+    transition: background 1s ease;
+}
+
+#musicVisualizer{
+    position:fixed;
+    left:0;
+    bottom:0;
+    width:100%;
+    height:180px;
+    z-index:-1;
+    opacity:.45;
+    pointer-events:none;
+}
+
+.player{
+    animation: playerPulse 3s ease infinite;
+}
+
+@keyframes playerPulse{
+    0%,100%{
+        box-shadow:
+        0 20px 60px rgba(0,0,0,.35);
+    }
+    50%{
+        box-shadow:
+        0 0 60px rgba(0,229,255,.35),
+        0 0 100px rgba(255,0,128,.25);
+    }
+}
+
+</style>
 </head>
 
 <body>
@@ -579,6 +613,9 @@
 
 </div>
 
+
+
+<canvas id="musicVisualizer"></canvas>
 
 <audio id="audio"></audio>
 
@@ -1131,6 +1168,151 @@
 
     loadSong(0, false);
 //hello
+
+
+/* ===== Real Time Audio Spectrum ===== */
+
+let audioContext;
+let analyser;
+let sourceNode;
+let dataArray;
+
+function initVisualizer(){
+
+    if(audioContext) return;
+
+    audioContext =
+        new (window.AudioContext || window.webkitAudioContext)();
+
+    analyser =
+        audioContext.createAnalyser();
+
+    analyser.fftSize = 256;
+
+    dataArray =
+        new Uint8Array(analyser.frequencyBinCount);
+
+    sourceNode =
+        audioContext.createMediaElementSource(audio);
+
+    sourceNode.connect(analyser);
+
+    analyser.connect(audioContext.destination);
+
+    drawSpectrum();
+}
+
+
+const canvas =
+    document.getElementById("musicVisualizer");
+
+const ctx =
+    canvas.getContext("2d");
+
+
+function resizeVisualizer(){
+
+    canvas.width =
+        window.innerWidth;
+
+    canvas.height =
+        180;
+}
+
+window.addEventListener(
+    "resize",
+    resizeVisualizer
+);
+
+resizeVisualizer();
+
+
+function drawSpectrum(){
+
+    requestAnimationFrame(drawSpectrum);
+
+    if(!analyser) return;
+
+
+    analyser.getByteFrequencyData(dataArray);
+
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    let average =
+        dataArray.reduce(
+            (a,b)=>a+b,
+            0
+        ) / dataArray.length;
+
+
+    let hue =
+        average * 3;
+
+
+    document.body.style.background =
+    `
+    linear-gradient(
+        120deg,
+        hsl(${hue},90%,55%),
+        hsl(${hue+120},90%,45%),
+        hsl(${hue+240},90%,50%)
+    )
+    `;
+
+
+    let barWidth =
+        canvas.width /
+        dataArray.length;
+
+
+    dataArray.forEach(
+        (value,index)=>{
+
+            let height =
+                value / 255 *
+                canvas.height;
+
+            ctx.fillStyle =
+            `
+            hsla(
+            ${index*5+hue},
+            100%,
+            60%,
+            .7)
+            `;
+
+            ctx.fillRect(
+                index*barWidth,
+                canvas.height-height,
+                barWidth-2,
+                height
+            );
+        }
+    );
+}
+
+
+audio.addEventListener(
+    "play",
+    ()=>{
+
+        initVisualizer();
+
+        if(audioContext.state==="suspended"){
+            audioContext.resume();
+        }
+
+    }
+);
+
+
 </script>
 
 </body>
