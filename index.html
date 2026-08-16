@@ -3,1065 +3,1113 @@
 
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>PouMusic</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<style>
+    <title>PouMusic</title>
 
-/* =========================================================
-   Global
-========================================================= */
 
-* {
-    box-sizing: border-box;
-}
+    <style>
 
-:root {
+        /* =====================================================
+           Global
+        ===================================================== */
 
-    --bg: #090b10;
+        * {
+            box-sizing: border-box;
+        }
 
-    --text: #ffffff;
 
-    --subtext: rgba(255,255,255,0.55);
+        :root {
 
-    --line: rgba(255,255,255,0.12);
+            --bg: #101114;
 
-}
+            --card: rgba(255, 255, 255, 0.08);
 
+            --card-hover: rgba(255, 255, 255, 0.13);
 
-/* =========================================================
-   HTML / BODY
-========================================================= */
+            --text: #ffffff;
 
-html,
-body {
+            --subtext: rgba(255, 255, 255, 0.55);
 
-    margin: 0;
-    padding: 0;
+            --line: rgba(255, 255, 255, 0.1);
 
-    width: 100%;
-    min-height: 100%;
+            --accent: #ffffff;
 
-}
+        }
 
 
-body {
+        html,
+        body {
 
-    min-height: 100vh;
+            margin: 0;
 
-    font-family:
-        Inter,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+            padding: 0;
 
-    color: var(--text);
+            width: 100%;
 
-    background: #090b10;
+            min-height: 100%;
 
-    overflow-x: hidden;
+        }
 
-    display: flex;
 
-    justify-content: center;
+        body {
 
-    align-items: center;
+            min-height: 100vh;
 
-    padding: 40px 20px;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
 
-}
+            color: var(--text);
 
 
-/* =========================================================
-   Flowing Background
-   不受音乐控制
-========================================================= */
+            /* =================================================
+               Static Background
+               不再跟随音乐变化
+            ================================================= */
 
-body::before {
+            background:
 
-    content: "";
+                radial-gradient(
+                    circle at 15% 10%,
+                    rgba(120, 100, 255, 0.10),
+                    transparent 35%
+                ),
 
-    position: fixed;
+                radial-gradient(
+                    circle at 85% 85%,
+                    rgba(0, 180, 255, 0.07),
+                    transparent 35%
+                ),
 
-    inset: -35%;
+                radial-gradient(
+                    circle at 50% 50%,
+                    rgba(255, 255, 255, 0.025),
+                    transparent 50%
+                ),
 
-    z-index: -5;
+                #101114;
 
-    pointer-events: none;
 
-    background:
+            display: flex;
 
-        radial-gradient(
-            circle at 20% 20%,
-            rgba(70,110,255,0.25),
-            transparent 35%
-        ),
+            justify-content: center;
 
-        radial-gradient(
-            circle at 80% 25%,
-            rgba(190,70,255,0.20),
-            transparent 35%
-        ),
+            align-items: center;
 
-        radial-gradient(
-            circle at 50% 85%,
-            rgba(0,210,255,0.17),
-            transparent 40%
-        );
 
-    filter: blur(70px);
+            padding: 40px 20px;
 
-    animation:
-        backgroundFlow
-        18s
-        ease-in-out
-        infinite
-        alternate;
+        }
 
-}
 
+        /* =====================================================
+           Main
+        ===================================================== */
 
-body::after {
+        .app {
 
-    content: "";
+            width: 100%;
 
-    position: fixed;
+            max-width: 900px;
 
-    inset: 0;
+        }
 
-    z-index: -4;
 
-    pointer-events: none;
+        .header {
 
-    background:
+            margin-bottom: 22px;
 
-        radial-gradient(
-            circle at center,
-            transparent 15%,
-            rgba(0,0,0,0.40) 100%
-        );
+        }
 
-}
 
+        .title {
 
-@keyframes backgroundFlow {
+            font-size: 30px;
 
-    0% {
+            font-weight: 700;
 
-        transform:
-            translate3d(-5%, -4%, 0)
-            scale(1);
+            letter-spacing: -0.5px;
 
-    }
+        }
 
-    50% {
 
-        transform:
-            translate3d(5%, 3%, 0)
-            scale(1.08);
+        .subtitle {
 
-    }
+            margin-top: 6px;
 
-    100% {
+            color: var(--subtext);
 
-        transform:
-            translate3d(-2%, 6%, 0)
-            scale(1.13);
+            font-size: 14px;
 
-    }
+        }
 
-}
 
+        /* =====================================================
+           Player
+        ===================================================== */
 
-/* =========================================================
-   Snow
-========================================================= */
+        .player {
 
-#snowCanvas {
+            position: sticky;
 
-    position: fixed;
+            top: 20px;
 
-    inset: 0;
+            z-index: 10;
 
-    width: 100%;
-    height: 100%;
 
-    z-index: 20;
+            padding: 22px;
 
-    pointer-events: none;
 
-}
+            border:
 
+                1px solid
 
-/* =========================================================
-   Touch Effect Layer
-========================================================= */
+                rgba(255, 255, 255, 0.11);
 
-#touchEffect {
 
-    position: fixed;
+            border-radius: 24px;
 
-    inset: 0;
 
-    width: 100%;
-    height: 100%;
+            /* =================================================
+               Glass / Gaussian Blur
+            ================================================= */
 
-    z-index: 25;
+            background:
 
-    pointer-events: none;
+                linear-gradient(
+                    135deg,
+                    rgba(35, 36, 42, 0.72),
+                    rgba(20, 21, 25, 0.58)
+                );
 
-    overflow: hidden;
 
-}
+            backdrop-filter:
 
+                blur(28px)
 
-/* =========================================================
-   Mouse Following Glow
-========================================================= */
+                saturate(130%);
 
-.touch-glow {
 
-    position: absolute;
+            -webkit-backdrop-filter:
 
-    width: 190px;
-    height: 190px;
+                blur(28px)
 
-    margin-left: -95px;
-    margin-top: -95px;
+                saturate(130%);
 
-    border-radius: 50%;
 
-    pointer-events: none;
+            box-shadow:
 
-    background:
+                0 20px 60px
 
-        radial-gradient(
-            circle,
-            rgba(255,255,255,0.10) 0%,
-            rgba(120,180,255,0.06) 30%,
-            rgba(120,100,255,0.03) 50%,
-            transparent 72%
-        );
+                rgba(0, 0, 0, 0.38);
 
-    filter: blur(12px);
 
-    opacity: 0;
+            margin-bottom: 20px;
 
-    transform: scale(0.7);
 
-    transition:
+            overflow: hidden;
 
-        opacity 0.25s ease,
-        transform 0.25s ease;
+        }
 
-}
 
+        /* 顶部玻璃高光 */
 
-/* =========================================================
-   Touch Ripple
-========================================================= */
+        .player::before {
 
-.touch-ripple {
+            content: "";
 
-    position: absolute;
+            position: absolute;
 
-    width: 20px;
-    height: 20px;
+            left: 0;
 
-    margin-left: -10px;
-    margin-top: -10px;
+            top: 0;
 
-    border-radius: 50%;
+            width: 100%;
 
-    pointer-events: none;
+            height: 1px;
 
-    border:
 
-        1px solid
-        rgba(255,255,255,0.75);
+            background:
 
-    background:
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,0.35),
+                    transparent
+                );
 
-        radial-gradient(
-            circle,
-            rgba(255,255,255,0.13),
-            rgba(100,180,255,0.05),
-            transparent 70%
-        );
+            opacity: 0.7;
 
-    box-shadow:
+        }
 
-        0 0 20px
-        rgba(150,210,255,0.25),
 
-        inset 0 0 20px
-        rgba(255,255,255,0.08);
+        .now-playing {
 
-    animation:
+            display: flex;
 
-        touchRipple
-        0.85s
-        cubic-bezier(.2,.7,.2,1)
-        forwards;
+            align-items: center;
 
-}
+            gap: 16px;
 
+        }
 
-@keyframes touchRipple {
 
-    0% {
+        /* =====================================================
+           Album
+        ===================================================== */
 
-        width: 20px;
-        height: 20px;
+        .album {
 
-        margin-left: -10px;
-        margin-top: -10px;
+            width: 64px;
 
-        opacity: 0.95;
+            height: 64px;
 
-        transform: scale(0.5);
 
-    }
+            flex-shrink: 0;
 
-    45% {
 
-        opacity: 0.50;
+            border-radius: 16px;
 
-    }
 
-    70% {
+            display: flex;
 
-        opacity: 0.25;
+            justify-content: center;
 
-    }
+            align-items: center;
 
-    100% {
 
-        width: 430px;
-        height: 430px;
+            font-size: 26px;
 
-        margin-left: -215px;
-        margin-top: -215px;
 
-        opacity: 0;
+            background:
 
-        transform: scale(1);
+                linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.18),
+                    rgba(255,255,255,0.04)
+                );
 
-    }
 
-}
+            border:
 
+                1px solid
 
-/* =========================================================
-   Touch Particles
-========================================================= */
+                rgba(255,255,255,0.1);
 
-.touch-particle {
 
-    position: absolute;
+            box-shadow:
 
-    width: 4px;
-    height: 4px;
+                inset 0 1px 0
 
-    border-radius: 50%;
+                rgba(255,255,255,0.08),
 
-    background: white;
+                0 10px 30px
 
-    pointer-events: none;
+                rgba(0,0,0,0.15);
 
-    box-shadow:
+        }
 
-        0 0 8px
-        rgba(255,255,255,0.9),
 
-        0 0 18px
-        rgba(100,180,255,0.6);
+        /* =====================================================
+           Track Info
+        ===================================================== */
 
-    animation:
+        .track-info {
 
-        touchParticle
-        0.75s
-        ease-out
-        forwards;
+            min-width: 0;
 
-}
+            flex: 1;
 
+        }
 
-@keyframes touchParticle {
 
-    0% {
+        .track-name {
 
-        opacity: 1;
+            font-size: 18px;
 
-        transform:
-            translate(0,0)
-            scale(1);
+            font-weight: 600;
 
-    }
 
-    100% {
+            white-space: nowrap;
 
-        opacity: 0;
+            overflow: hidden;
 
-        transform:
-            translate(
-                var(--dx),
-                var(--dy)
-            )
-            scale(0);
+            text-overflow: ellipsis;
 
-    }
+        }
 
-}
 
+        .track-source {
 
-/* =========================================================
-   Main
-========================================================= */
+            margin-top: 4px;
 
-.app {
+            font-size: 13px;
 
-    width: 100%;
+            color: var(--subtext);
 
-    max-width: 900px;
+        }
 
-    position: relative;
 
-    z-index: 30;
+        /* =====================================================
+           Controls
+        ===================================================== */
 
-}
+        .controls {
 
+            display: flex;
 
-/* =========================================================
-   Header
-========================================================= */
+            align-items: center;
 
-.header {
+            gap: 10px;
 
-    margin-bottom: 22px;
+            margin-top: 20px;
 
-}
+        }
 
 
-.title {
+        button {
 
-    font-size: 30px;
+            border: none;
 
-    font-weight: 700;
+            outline: none;
 
-    letter-spacing: -0.5px;
 
-}
+            color: white;
 
 
-.subtitle {
+            cursor: pointer;
 
-    margin-top: 6px;
 
-    color: var(--subtext);
+            font-family: inherit;
 
-    font-size: 14px;
 
-}
+            transition:
 
+                transform 0.15s ease,
 
-/* =========================================================
-   Player
-========================================================= */
+                background 0.15s ease,
 
-.player {
+                opacity 0.15s ease;
 
-    position: sticky;
+        }
 
-    top: 20px;
 
-    z-index: 40;
+        button:hover {
 
-    padding: 22px;
+            transform: translateY(-1px);
 
-    border:
+        }
 
-        1px solid
-        rgba(255,255,255,0.14);
 
-    border-radius: 24px;
+        button:active {
 
-    background:
+            transform: scale(0.95);
 
-        rgba(20,22,28,0.50);
+        }
 
-    backdrop-filter:
 
-        blur(30px)
-        saturate(150%);
+        .control-btn {
 
-    -webkit-backdrop-filter:
+            width: 42px;
 
-        blur(30px)
-        saturate(150%);
+            height: 42px;
 
-    box-shadow:
 
-        0 20px 60px
-        rgba(0,0,0,0.35),
+            border-radius: 50%;
 
-        inset 0 1px 0
-        rgba(255,255,255,0.08);
 
-    margin-bottom: 20px;
+            background:
 
-    transition:
+                rgba(255,255,255,0.08);
 
-        background 0.5s ease,
-        box-shadow 0.5s ease;
+        }
 
-}
 
+        .control-btn:hover {
 
-.player:hover {
+            background:
 
-    background:
+                rgba(255,255,255,0.14);
 
-        rgba(25,27,34,0.56);
+        }
 
-    box-shadow:
 
-        0 25px 80px
-        rgba(0,0,0,0.42),
+        /* =====================================================
+           Play Button
+        ===================================================== */
 
-        inset 0 1px 0
-        rgba(255,255,255,0.10);
+        .play-btn {
 
-}
+            width: 50px;
 
+            height: 50px;
 
-/* =========================================================
-   Now Playing
-========================================================= */
 
-.now-playing {
+            border-radius: 50%;
 
-    display: flex;
 
-    align-items: center;
+            background: white;
 
-    gap: 16px;
+            color: #111;
 
-}
 
+            font-size: 19px;
 
-.album {
 
-    width: 64px;
-    height: 64px;
+            box-shadow:
 
-    flex-shrink: 0;
+                0 5px 20px
 
-    border-radius: 16px;
+                rgba(255,255,255,0.08);
 
-    display: flex;
+        }
 
-    justify-content: center;
 
-    align-items: center;
+        .play-btn:hover {
 
-    font-size: 26px;
+            box-shadow:
 
-    background:
+                0 5px 25px
 
-        linear-gradient(
-            135deg,
-            rgba(255,255,255,0.18),
-            rgba(255,255,255,0.04)
-        );
+                rgba(255,255,255,0.18);
 
-    border:
+        }
 
-        1px solid
-        rgba(255,255,255,0.12);
 
-    box-shadow:
+        /* =====================================================
+           Progress Container
+        ===================================================== */
 
-        inset 0 1px 0
-        rgba(255,255,255,0.08);
+        .progress-container {
 
-}
+            position: relative;
 
 
-.track-info {
+            flex: 1;
 
-    min-width: 0;
 
-    flex: 1;
+            height: 6px;
 
-}
 
+            border-radius: 10px;
 
-.track-name {
 
-    font-size: 18px;
+            background:
 
-    font-weight: 600;
+                rgba(255,255,255,0.10);
 
-    white-space: nowrap;
 
-    overflow: hidden;
+            cursor: pointer;
 
-    text-overflow: ellipsis;
 
-}
+            overflow: hidden;
 
 
-.track-source {
+            box-shadow:
 
-    margin-top: 4px;
+                inset 0 1px 2px
 
-    font-size: 13px;
+                rgba(0,0,0,0.25);
 
-    color: var(--subtext);
+        }
 
-}
 
+        /* =====================================================
+           Progress Bar
+           渐变 + 流光
+        ===================================================== */
 
-/* =========================================================
-   Controls
-========================================================= */
+        .progress {
 
-.controls {
+            position: relative;
 
-    display: flex;
 
-    align-items: center;
+            width: 0%;
 
-    gap: 10px;
+            height: 100%;
 
-    margin-top: 20px;
 
-}
+            border-radius: inherit;
 
 
-button {
+            background:
 
-    border: none;
+                linear-gradient(
+                    90deg,
+                    #7c5cff,
+                    #00c6ff,
+                    #00e5ff,
+                    #7c5cff
+                );
 
-    outline: none;
 
-    color: white;
+            background-size: 250% 100%;
 
-    cursor: pointer;
 
-    font-family: inherit;
+            box-shadow:
 
-    transition:
+                0 0 8px
 
-        transform 0.15s ease,
-        background 0.15s ease,
-        opacity 0.15s ease;
+                rgba(0, 210, 255, 0.45),
 
-}
+                0 0 16px
 
+                rgba(124, 92, 255, 0.25);
 
-button:hover {
 
-    transform: translateY(-1px);
+            transition:
 
-}
+                width 0.12s linear;
 
+        }
 
-button:active {
 
-    transform: scale(0.95);
+        /* =====================================================
+           Progress 流光
+        ===================================================== */
 
-}
+        .progress::after {
 
+            content: "";
 
-.control-btn {
 
-    width: 42px;
-    height: 42px;
+            position: absolute;
 
-    border-radius: 50%;
 
-    background:
+            top: 0;
 
-        rgba(255,255,255,0.08);
+            bottom: 0;
 
-}
 
+            width: 80px;
 
-.control-btn:hover {
 
-    background:
+            right: -80px;
 
-        rgba(255,255,255,0.15);
 
-}
+            background:
 
+                linear-gradient(
+                    90deg,
+                    transparent,
+                    rgba(255,255,255,0.75),
+                    transparent
+                );
 
-.play-btn {
 
-    width: 50px;
-    height: 50px;
+            filter:
 
-    border-radius: 50%;
+                blur(3px);
 
-    background: white;
 
-    color: #111;
+            opacity: 0;
 
-    font-size: 19px;
 
-}
+            pointer-events: none;
 
+        }
 
-.progress-container {
 
-    flex: 1;
+        /* 播放时流光 */
 
-    height: 5px;
+        .player.playing .progress {
 
-    border-radius: 10px;
+            animation:
 
-    background:
+                progressGradient 4s linear infinite;
 
-        rgba(255,255,255,0.10);
+        }
 
-    cursor: pointer;
 
-    overflow: hidden;
+        .player.playing .progress::after {
 
-}
+            animation:
 
+                progressShine 2.2s linear infinite;
 
-.progress {
+            opacity: 1;
 
-    width: 0%;
+        }
 
-    height: 100%;
 
-    background: white;
+        @keyframes progressGradient {
 
-    border-radius: inherit;
+            0% {
 
-}
+                background-position: 0% 50%;
 
+            }
 
-.time {
+            100% {
 
-    min-width: 85px;
+                background-position: 250% 50%;
 
-    text-align: right;
+            }
 
-    font-size: 12px;
+        }
 
-    color: var(--subtext);
 
-    font-variant-numeric: tabular-nums;
+        @keyframes progressShine {
 
-}
+            0% {
 
+                right: 100%;
 
-/* =========================================================
-   Playlist
-========================================================= */
+            }
 
-.playlist {
+            100% {
 
-    display: flex;
+                right: -80px;
 
-    flex-direction: column;
+            }
 
-    gap: 8px;
+        }
 
-}
 
+        /* =====================================================
+           Progress Hover
+        ===================================================== */
 
-.song {
+        .progress-container:hover {
 
-    display: flex;
+            height: 7px;
 
-    align-items: center;
+        }
 
-    padding: 13px 15px;
 
-    border-radius: 15px;
+        .progress-container:hover .progress {
 
-    background:
+            box-shadow:
 
-        rgba(255,255,255,0.035);
+                0 0 10px
 
-    border:
+                rgba(0, 220, 255, 0.65),
 
-        1px solid transparent;
+                0 0 22px
 
-    cursor: pointer;
+                rgba(124, 92, 255, 0.35);
 
-    transition:
+        }
 
-        background 0.15s ease,
-        border-color 0.15s ease,
-        transform 0.15s ease;
 
-}
+        /* =====================================================
+           Time
+        ===================================================== */
 
+        .time {
 
-.song:hover {
+            min-width: 85px;
 
-    background:
 
-        rgba(255,255,255,0.10);
+            text-align: right;
 
-    transform:
-        translateX(2px);
 
-}
+            font-size: 12px;
 
 
-.song.active {
+            color: var(--subtext);
 
-    background:
 
-        rgba(255,255,255,0.09);
+            font-variant-numeric:
 
-    border-color:
+                tabular-nums;
 
-        rgba(255,255,255,0.12);
+        }
 
-}
 
+        /* =====================================================
+           Volume
+        ===================================================== */
 
-.song-number {
+        .volume {
 
-    width: 35px;
+            display: flex;
 
-    color:
+            align-items: center;
 
-        rgba(255,255,255,0.35);
+            gap: 8px;
 
-    font-size: 13px;
+        }
 
-    font-variant-numeric: tabular-nums;
 
-}
+        .volume-icon {
 
+            color:
 
-.song-icon {
+                rgba(255,255,255,0.5);
 
-    width: 34px;
-    height: 34px;
+            font-size: 14px;
 
-    border-radius: 10px;
+        }
 
-    background:
 
-        rgba(255,255,255,0.07);
+        input[type="range"] {
 
-    display: flex;
+            width: 90px;
 
-    align-items: center;
+            height: 4px;
 
-    justify-content: center;
 
-    margin-right: 12px;
+            appearance: none;
 
-    font-size: 15px;
+            -webkit-appearance: none;
 
-}
 
+            border-radius: 10px;
 
-.song-info {
 
-    flex: 1;
+            background:
 
-    min-width: 0;
+                rgba(255,255,255,0.1);
 
-}
 
+            cursor: pointer;
 
-.song-title {
+        }
 
-    font-size: 14px;
 
-    font-weight: 500;
+        input[type="range"]::-webkit-slider-thumb {
 
-    white-space: nowrap;
+            appearance: none;
 
-    overflow: hidden;
+            -webkit-appearance: none;
 
-    text-overflow: ellipsis;
 
-}
+            width: 12px;
 
+            height: 12px;
 
-.song-type {
 
-    margin-top: 2px;
+            border-radius: 50%;
 
-    color: var(--subtext);
 
-    font-size: 11px;
+            background: white;
 
-}
 
+            cursor: pointer;
 
-.song-play {
 
-    color:
+            box-shadow:
 
-        rgba(255,255,255,0.45);
+                0 0 8px
 
-    font-size: 14px;
+                rgba(255,255,255,0.25);
 
-}
+        }
 
 
-/* =========================================================
-   Volume
-========================================================= */
+        input[type="range"]::-moz-range-thumb {
 
-.volume {
+            width: 12px;
 
-    display: flex;
+            height: 12px;
 
-    align-items: center;
 
-    gap: 8px;
+            border: none;
 
-}
 
+            border-radius: 50%;
 
-.volume-icon {
 
-    color:
+            background: white;
 
-        rgba(255,255,255,0.5);
 
-    font-size: 14px;
+            cursor: pointer;
 
-}
+        }
 
 
-input[type="range"] {
+        /* =====================================================
+           Playlist
+        ===================================================== */
 
-    width: 90px;
+        .playlist {
 
-    height: 4px;
+            display: flex;
 
-    appearance: none;
+            flex-direction: column;
 
-    -webkit-appearance: none;
+            gap: 8px;
 
-    border-radius: 10px;
+        }
 
-    background:
 
-        rgba(255,255,255,0.10);
+        .song {
 
-    cursor: pointer;
+            display: flex;
 
-}
+            align-items: center;
 
 
-input[type="range"]::-webkit-slider-thumb {
+            padding: 13px 15px;
 
-    appearance: none;
 
-    -webkit-appearance: none;
+            border-radius: 15px;
 
-    width: 12px;
-    height: 12px;
 
-    border-radius: 50%;
+            background:
 
-    background: white;
+                rgba(255,255,255,0.035);
 
-    cursor: pointer;
 
-}
+            border:
 
+                1px solid transparent;
 
-/* =========================================================
-   Footer
-========================================================= */
 
-.footer {
+            cursor: pointer;
 
-    margin-top: 20px;
 
-    text-align: center;
+            transition:
 
-    color:
+                background 0.15s ease,
 
-        rgba(255,255,255,0.30);
+                border-color 0.15s ease,
 
-    font-size: 12px;
+                transform 0.15s ease;
 
-}
+        }
 
 
-/* =========================================================
-   Mobile
-========================================================= */
+        .song:hover {
 
-@media (max-width: 600px) {
+            background:
 
-    body {
+                var(--card-hover);
 
-        padding: 20px 12px;
 
-    }
+            transform:
 
+                translateX(2px);
 
-    .player {
+        }
 
-        padding: 16px;
 
-        border-radius: 20px;
+        .song.active {
 
-    }
+            background:
 
+                var(--card);
 
-    .title {
 
-        font-size: 25px;
+            border-color:
 
-    }
+                var(--line);
 
+        }
 
-    .album {
 
-        width: 55px;
-        height: 55px;
+        .song-number {
 
-    }
+            width: 35px;
 
 
-    .time {
+            color:
 
-        display: none;
+                rgba(255,255,255,0.35);
 
-    }
 
+            font-size: 13px;
 
-    .volume {
 
-        display: none;
+            font-variant-numeric:
 
-    }
+                tabular-nums;
 
+        }
 
-    .song {
 
-        padding: 12px;
+        .song-icon {
 
-    }
+            width: 34px;
 
-}
+            height: 34px;
 
-</style>
+
+            border-radius: 10px;
+
+
+            background:
+
+                rgba(255,255,255,0.07);
+
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+
+            margin-right: 12px;
+
+
+            font-size: 15px;
+
+        }
+
+
+        .song-info {
+
+            flex: 1;
+
+            min-width: 0;
+
+        }
+
+
+        .song-title {
+
+            font-size: 14px;
+
+            font-weight: 500;
+
+
+            white-space: nowrap;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+        }
+
+
+        .song-type {
+
+            margin-top: 2px;
+
+
+            color:
+
+                var(--subtext);
+
+
+            font-size: 11px;
+
+        }
+
+
+        .song-play {
+
+            color:
+
+                rgba(255,255,255,0.45);
+
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================================
+           Footer
+        ===================================================== */
+
+        .footer {
+
+            margin-top: 20px;
+
+
+            text-align: center;
+
+
+            color:
+
+                rgba(255,255,255,0.3);
+
+
+            font-size: 12px;
+
+        }
+
+
+        /* =====================================================
+           Mobile
+        ===================================================== */
+
+        @media (max-width: 600px) {
+
+            body {
+
+                padding:
+
+                    20px 12px;
+
+            }
+
+
+            .player {
+
+                padding: 16px;
+
+                border-radius: 20px;
+
+            }
+
+
+            .title {
+
+                font-size: 25px;
+
+            }
+
+
+            .album {
+
+                width: 55px;
+
+                height: 55px;
+
+            }
+
+
+            .time {
+
+                display: none;
+
+            }
+
+
+            .volume {
+
+                display: none;
+
+            }
+
+
+            .song {
+
+                padding: 12px;
+
+            }
+
+
+            .controls {
+
+                gap: 7px;
+
+            }
+
+
+            .progress-container {
+
+                min-width: 40px;
+
+            }
+
+        }
+
+
+    </style>
 
 </head>
 
@@ -1069,28 +1117,12 @@ input[type="range"]::-webkit-slider-thumb {
 <body>
 
 
-<!-- =========================================================
-     Touch Effect
-========================================================= -->
-
-<div id="touchEffect"></div>
-
-
-<!-- =========================================================
-     Snow
-========================================================= -->
-
-<canvas id="snowCanvas"></canvas>
-
-
-<!-- =========================================================
-     Main App
-========================================================= -->
-
 <div class="app">
 
 
-    <!-- Header -->
+    <!-- =====================================================
+         Header
+    ===================================================== -->
 
     <div class="header">
 
@@ -1107,9 +1139,12 @@ input[type="range"]::-webkit-slider-thumb {
 
     <!-- =====================================================
          Player
-    ====================================================== -->
+    ===================================================== -->
 
-    <div class="player">
+    <div
+        class="player"
+        id="player"
+    >
 
 
         <div class="now-playing">
@@ -1145,10 +1180,10 @@ input[type="range"]::-webkit-slider-thumb {
         </div>
 
 
-        <!-- Controls -->
-
         <div class="controls">
 
+
+            <!-- Previous -->
 
             <button
                 class="control-btn"
@@ -1159,6 +1194,8 @@ input[type="range"]::-webkit-slider-thumb {
             </button>
 
 
+            <!-- Play -->
+
             <button
                 class="play-btn"
                 id="playBtn"
@@ -1168,6 +1205,8 @@ input[type="range"]::-webkit-slider-thumb {
             </button>
 
 
+            <!-- Next -->
+
             <button
                 class="control-btn"
                 id="nextBtn"
@@ -1176,6 +1215,8 @@ input[type="range"]::-webkit-slider-thumb {
                 ›
             </button>
 
+
+            <!-- Progress -->
 
             <div
                 class="progress-container"
@@ -1190,6 +1231,8 @@ input[type="range"]::-webkit-slider-thumb {
             </div>
 
 
+            <!-- Time -->
+
             <div
                 class="time"
                 id="time"
@@ -1197,6 +1240,8 @@ input[type="range"]::-webkit-slider-thumb {
                 0:00 / 0:00
             </div>
 
+
+            <!-- Volume -->
 
             <div class="volume">
 
@@ -1225,13 +1270,17 @@ input[type="range"]::-webkit-slider-thumb {
 
     <!-- =====================================================
          Playlist
-    ====================================================== -->
+    ===================================================== -->
 
     <div
         class="playlist"
         id="playlist"
     ></div>
 
+
+    <!-- =====================================================
+         Footer
+    ===================================================== -->
 
     <div class="footer">
         PouMusic
@@ -1251,1228 +1300,734 @@ input[type="range"]::-webkit-slider-thumb {
 <script>
 
 
-/* =========================================================
-   Music List
-========================================================= */
-
-const songs = [
-
-    {
-        name: "Carefun",
-        file: "Carefun.ogg"
-    },
-
-    {
-        name: "Cheerful",
-        file: "Cheerful.ogg"
-    },
-
-    {
-        name: "Chill",
-        file: "Chill.ogg"
-    },
-
-    {
-        name: "Forest",
-        file: "Forest.ogg"
-    },
-
-    {
-        name: "Guess",
-        file: "Guess.ogg"
-    },
-
-    {
-        name: "Happy",
-        file: "Happy.ogg"
-    },
-
-    {
-        name: "Hill",
-        file: "Hill.wav"
-    },
-
-    {
-        name: "Hop",
-        file: "Hop.ogg"
-    },
-
-    {
-        name: "IX",
-        file: "IX.mp3"
-    },
-
-    {
-        name: "Jolly",
-        file: "Jolly.ogg"
-    },
-
-    {
-        name: "Popper",
-        file: "Popper.ogg"
-    },
-
-    {
-        name: "Soft",
-        file: "Soft.ogg"
-    },
-
-    {
-        name: "Swap",
-        file: "Swap.ogg"
-    },
-
-    {
-        name: "Think",
-        file: "Think.ogg"
-    },
-
-    {
-        name: "Tropical",
-        file: "Tropical.ogg"
-    },
-
-    {
-        name: "War 3",
-        file: "War_3.wav"
-    }
-
-];
-
-
-const MUSIC_PATH = "PouMusic/";
-
-
-/* =========================================================
-   Elements
-========================================================= */
-
-const audio =
-    document.getElementById("audio");
-
-const playBtn =
-    document.getElementById("playBtn");
-
-const prevBtn =
-    document.getElementById("prevBtn");
-
-const nextBtn =
-    document.getElementById("nextBtn");
-
-const progress =
-    document.getElementById("progress");
-
-const progressContainer =
-    document.getElementById("progressContainer");
-
-const trackName =
-    document.getElementById("trackName");
-
-const trackSource =
-    document.getElementById("trackSource");
-
-const time =
-    document.getElementById("time");
-
-const volume =
-    document.getElementById("volume");
-
-const playlist =
-    document.getElementById("playlist");
-
-
-/* =========================================================
-   State
-========================================================= */
-
-let currentIndex = 0;
-
-
-/* =========================================================
-   Format Time
-========================================================= */
-
-function formatTime(seconds) {
-
-    if (!isFinite(seconds)) {
-
-        return "0:00";
-
-    }
-
-
-    const minutes =
-        Math.floor(seconds / 60);
-
-
-    const secs =
-        Math.floor(seconds % 60)
-        .toString()
-        .padStart(2, "0");
-
-
-    return `${minutes}:${secs}`;
-
-}
-
-
-/* =========================================================
-   Load Song
-========================================================= */
-
-function loadSong(
-    index,
-    autoplay = false
-) {
-
-    currentIndex = index;
-
-
-    const song =
-        songs[currentIndex];
-
-
-    audio.src =
-        MUSIC_PATH +
-        song.file;
-
-
-    trackName.textContent =
-        song.name;
-
-
-    trackSource.textContent =
-        "PouMusic · " +
-        song.file
-        .split(".")
-        .pop()
-        .toUpperCase();
-
-
-    updatePlaylist();
-
-
-    if (autoplay) {
-
-        audio.play()
-
-        .then(() => {
-
-            updatePlayButton();
-
-        })
-
-        .catch(error => {
-
-            console.log(
-                "Playback error:",
-                error
-            );
-
-        });
-
-    }
-
-    else {
-
-        updatePlayButton();
-
-    }
-
-}
-
-
-/* =========================================================
-   Playlist
-========================================================= */
-
-function createPlaylist() {
-
-    playlist.innerHTML = "";
-
-
-    songs.forEach(
-        (song, index) => {
-
-
-            const item =
-                document.createElement("div");
-
-
-            item.className =
-                "song";
-
-
-            item.dataset.index =
-                index;
-
-
-            item.innerHTML = `
-
-                <div class="song-number">
-
-                    ${String(index + 1)
-                        .padStart(2, "0")}
-
-                </div>
-
-
-                <div class="song-icon">
-
-                    ♪
-
-                </div>
-
-
-                <div class="song-info">
-
-                    <div class="song-title">
-
-                        ${song.name}
-
-                    </div>
-
-
-                    <div class="song-type">
-
-                        ${song.file
-                            .split(".")
-                            .pop()
-                            .toUpperCase()}
-
-                    </div>
-
-                </div>
-
-
-                <div class="song-play">
-
-                    ▶
-
-                </div>
-
-            `;
-
-
-            item.addEventListener(
-                "click",
-                () => {
-
-                    loadSong(
-                        index,
-                        true
-                    );
-
-                }
-            );
-
-
-            playlist.appendChild(
-                item
-            );
-
-
+    /* =========================================================
+       Music List
+    ========================================================= */
+
+    const songs = [
+
+        {
+            name: "Carefun",
+            file: "Carefun.ogg"
+        },
+
+        {
+            name: "Cheerful",
+            file: "Cheerful.ogg"
+        },
+
+        {
+            name: "Chill",
+            file: "Chill.ogg"
+        },
+
+        {
+            name: "Forest",
+            file: "Forest.ogg"
+        },
+
+        {
+            name: "Guess",
+            file: "Guess.ogg"
+        },
+
+        {
+            name: "Happy",
+            file: "Happy.ogg"
+        },
+
+        {
+            name: "Hill",
+            file: "Hill.wav"
+        },
+
+        {
+            name: "Hop",
+            file: "Hop.ogg"
+        },
+
+        {
+            name: "IX",
+            file: "IX.mp3"
+        },
+
+        {
+            name: "Jolly",
+            file: "Jolly.ogg"
+        },
+
+        {
+            name: "Popper",
+            file: "Popper.ogg"
+        },
+
+        {
+            name: "Soft",
+            file: "Soft.ogg"
+        },
+
+        {
+            name: "Swap",
+            file: "Swap.ogg"
+        },
+
+        {
+            name: "Think",
+            file: "Think.ogg"
+        },
+
+        {
+            name: "Tropical",
+            file: "Tropical.ogg"
+        },
+
+        {
+            name: "War 3",
+            file: "War_3.wav"
         }
-    );
+
+    ];
 
 
-    updatePlaylist();
+    /* =========================================================
+       Configuration
+    ========================================================= */
 
-}
+    const MUSIC_PATH = "PouMusic/";
 
 
-/* =========================================================
-   Update Playlist
-========================================================= */
+    /* =========================================================
+       Elements
+    ========================================================= */
 
-function updatePlaylist() {
+    const audio =
+        document.getElementById("audio");
 
-    const items =
-        playlist.querySelectorAll(
-            ".song"
+
+    const player =
+        document.getElementById("player");
+
+
+    const playBtn =
+        document.getElementById("playBtn");
+
+
+    const prevBtn =
+        document.getElementById("prevBtn");
+
+
+    const nextBtn =
+        document.getElementById("nextBtn");
+
+
+    const progress =
+        document.getElementById("progress");
+
+
+    const progressContainer =
+        document.getElementById(
+            "progressContainer"
         );
 
 
-    items.forEach(
-        (item, index) => {
+    const trackName =
+        document.getElementById(
+            "trackName"
+        );
 
-            if (
-                index ===
-                currentIndex
-            ) {
 
-                item.classList.add(
-                    "active"
-                );
+    const trackSource =
+        document.getElementById(
+            "trackSource"
+        );
 
-            }
 
-            else {
+    const time =
+        document.getElementById("time");
 
-                item.classList.remove(
-                    "active"
-                );
 
-            }
+    const volume =
+        document.getElementById("volume");
+
+
+    const playlist =
+        document.getElementById("playlist");
+
+
+    /* =========================================================
+       State
+    ========================================================= */
+
+    let currentIndex = 0;
+
+
+    /* =========================================================
+       Format Time
+    ========================================================= */
+
+    function formatTime(seconds) {
+
+        if (!isFinite(seconds)) {
+
+            return "0:00";
 
         }
-    );
-
-}
 
 
-/* =========================================================
-   Play / Pause
-========================================================= */
+        const minutes =
+            Math.floor(seconds / 60);
 
-function togglePlay() {
 
-    if (!audio.src) {
+        const secs =
+            Math.floor(seconds % 60)
+                .toString()
+                .padStart(2, "0");
+
+
+        return `${minutes}:${secs}`;
+
+    }
+
+
+    /* =========================================================
+       Load Song
+    ========================================================= */
+
+    function loadSong(
+        index,
+        autoplay = false
+    ) {
+
+        currentIndex = index;
+
+
+        const song =
+            songs[currentIndex];
+
+
+        audio.src =
+            MUSIC_PATH + song.file;
+
+
+        trackName.textContent =
+            song.name;
+
+
+        trackSource.textContent =
+            "PouMusic · " +
+            song.file
+                .split(".")
+                .pop()
+                .toUpperCase();
+
+
+        /* 重置进度 */
+
+        progress.style.width =
+            "0%";
+
+
+        time.textContent =
+            "0:00 / 0:00";
+
+
+        updatePlaylist();
+
+
+        if (autoplay) {
+
+            audio.play()
+
+                .then(() => {
+
+                    updatePlayButton();
+
+                })
+
+                .catch(error => {
+
+                    console.log(error);
+
+                });
+
+        }
+
+        else {
+
+            updatePlayButton();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       Playlist
+    ========================================================= */
+
+    function createPlaylist() {
+
+        playlist.innerHTML = "";
+
+
+        songs.forEach(
+            (song, index) => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                item.className =
+                    "song";
+
+
+                item.dataset.index =
+                    index;
+
+
+                item.innerHTML = `
+
+                    <div class="song-number">
+                        ${String(index + 1).padStart(2, "0")}
+                    </div>
+
+                    <div class="song-icon">
+                        ♪
+                    </div>
+
+                    <div class="song-info">
+
+                        <div class="song-title">
+                            ${song.name}
+                        </div>
+
+                        <div class="song-type">
+                            ${song.file
+                                .split(".")
+                                .pop()
+                                .toUpperCase()}
+                        </div>
+
+                    </div>
+
+                    <div class="song-play">
+                        ▶
+                    </div>
+
+                `;
+
+
+                item.addEventListener(
+                    "click",
+                    () => {
+
+                        loadSong(
+                            index,
+                            true
+                        );
+
+                    }
+                );
+
+
+                playlist.appendChild(
+                    item
+                );
+
+            }
+        );
+
+
+        updatePlaylist();
+
+    }
+
+
+    /* =========================================================
+       Update Playlist
+    ========================================================= */
+
+    function updatePlaylist() {
+
+        const items =
+            playlist.querySelectorAll(
+                ".song"
+            );
+
+
+        items.forEach(
+            (item, index) => {
+
+                if (
+                    index ===
+                    currentIndex
+                ) {
+
+                    item.classList.add(
+                        "active"
+                    );
+
+                }
+
+                else {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       Play / Pause
+    ========================================================= */
+
+    function togglePlay() {
+
+        if (!audio.src) {
+
+            loadSong(
+                currentIndex,
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (audio.paused) {
+
+            audio.play();
+
+        }
+
+        else {
+
+            audio.pause();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       Update Play Button
+    ========================================================= */
+
+    function updatePlayButton() {
+
+        if (audio.paused) {
+
+            playBtn.textContent =
+                "▶";
+
+
+            player.classList.remove(
+                "playing"
+            );
+
+        }
+
+        else {
+
+            playBtn.textContent =
+                "Ⅱ";
+
+
+            player.classList.add(
+                "playing"
+            );
+
+        }
+
+    }
+
+
+    /* =========================================================
+       Previous
+    ========================================================= */
+
+    function previousSong() {
+
+        currentIndex--;
+
+
+        if (
+            currentIndex < 0
+        ) {
+
+            currentIndex =
+                songs.length - 1;
+
+        }
+
 
         loadSong(
             currentIndex,
             true
         );
 
-        return;
-
     }
 
 
-    if (audio.paused) {
+    /* =========================================================
+       Next
+    ========================================================= */
 
-        audio.play();
+    function nextSong() {
 
-    }
-
-    else {
-
-        audio.pause();
-
-    }
-
-}
-
-
-/* =========================================================
-   Play Button
-========================================================= */
-
-function updatePlayButton() {
-
-    if (audio.paused) {
-
-        playBtn.textContent =
-            "▶";
-
-    }
-
-    else {
-
-        playBtn.textContent =
-            "Ⅱ";
-
-    }
-
-}
-
-
-/* =========================================================
-   Previous Song
-========================================================= */
-
-function previousSong() {
-
-    currentIndex--;
-
-
-    if (
-        currentIndex < 0
-    ) {
-
-        currentIndex =
-            songs.length - 1;
-
-    }
-
-
-    loadSong(
-        currentIndex,
-        true
-    );
-
-}
-
-
-/* =========================================================
-   Next Song
-========================================================= */
-
-function nextSong() {
-
-    currentIndex++;
-
-
-    if (
-        currentIndex >=
-        songs.length
-    ) {
-
-        currentIndex = 0;
-
-    }
-
-
-    loadSong(
-        currentIndex,
-        true
-    );
-
-}
-
-
-/* =========================================================
-   Progress
-========================================================= */
-
-audio.addEventListener(
-    "timeupdate",
-    () => {
-
-
-        if (!audio.duration) {
-
-            return;
-
-        }
-
-
-        const percent =
-
-            (
-                audio.currentTime /
-                audio.duration
-            ) * 100;
-
-
-        progress.style.width =
-            percent + "%";
-
-
-        time.textContent =
-
-            `${formatTime(
-                audio.currentTime
-            )}
-             / ${formatTime(
-                audio.duration
-             )}`;
-
-    }
-);
-
-
-/* =========================================================
-   Seek
-========================================================= */
-
-progressContainer.addEventListener(
-    "click",
-    event => {
-
-
-        if (!audio.duration) {
-
-            return;
-
-        }
-
-
-        const rect =
-            progressContainer
-            .getBoundingClientRect();
-
-
-        const percent =
-
-            (
-                event.clientX -
-                rect.left
-            ) / rect.width;
-
-
-        audio.currentTime =
-            percent *
-            audio.duration;
-
-    }
-);
-
-
-/* =========================================================
-   Volume
-========================================================= */
-
-volume.addEventListener(
-    "input",
-    () => {
-
-        audio.volume =
-            volume.value;
-
-    }
-);
-
-
-/* =========================================================
-   Buttons
-========================================================= */
-
-playBtn.addEventListener(
-    "click",
-    togglePlay
-);
-
-
-prevBtn.addEventListener(
-    "click",
-    previousSong
-);
-
-
-nextBtn.addEventListener(
-    "click",
-    nextSong
-);
-
-
-/* =========================================================
-   Audio Events
-========================================================= */
-
-audio.addEventListener(
-    "play",
-    updatePlayButton
-);
-
-
-audio.addEventListener(
-    "pause",
-    updatePlayButton
-);
-
-
-audio.addEventListener(
-    "ended",
-    nextSong
-);
-
-
-/* =========================================================
-   Keyboard
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event => {
+        currentIndex++;
 
 
         if (
-            event.code ===
-            "Space"
+            currentIndex >=
+            songs.length
         ) {
 
-            event.preventDefault();
-
-            togglePlay();
+            currentIndex = 0;
 
         }
 
 
-        if (
-            event.code ===
-            "ArrowRight"
-        ) {
-
-            if (audio.duration) {
-
-                audio.currentTime += 5;
-
-            }
-
-        }
-
-
-        if (
-            event.code ===
-            "ArrowLeft"
-        ) {
-
-            if (audio.duration) {
-
-                audio.currentTime -= 5;
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   Init
-========================================================= */
-
-audio.volume = 0.8;
-
-createPlaylist();
-
-loadSong(
-    0,
-    false
-);
-
-
-/* =========================================================
-   Snow System
-========================================================= */
-
-const snowCanvas =
-    document.getElementById(
-        "snowCanvas"
-    );
-
-
-const snowCtx =
-    snowCanvas.getContext(
-        "2d"
-    );
-
-
-let snowflakes = [];
-
-let snowWidth = 0;
-
-let snowHeight = 0;
-
-
-/* =========================================================
-   Snow Resize
-========================================================= */
-
-function resizeSnow() {
-
-
-    const ratio =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
+        loadSong(
+            currentIndex,
+            true
         );
 
-
-    snowWidth =
-        window.innerWidth;
-
-
-    snowHeight =
-        window.innerHeight;
-
-
-    snowCanvas.width =
-        snowWidth * ratio;
-
-
-    snowCanvas.height =
-        snowHeight * ratio;
-
-
-    snowCanvas.style.width =
-        snowWidth + "px";
-
-
-    snowCanvas.style.height =
-        snowHeight + "px";
-
-
-    snowCtx.setTransform(
-        ratio,
-        0,
-        0,
-        ratio,
-        0,
-        0
-    );
-
-
-    createSnow();
-
-}
-
-
-/* =========================================================
-   Create Snow
-========================================================= */
-
-function createSnow() {
-
-
-    snowflakes = [];
-
-
-    const amount =
-
-        Math.min(
-            180,
-            Math.floor(
-                snowWidth * 0.13
-            )
-        );
-
-
-    for (
-        let i = 0;
-        i < amount;
-        i++
-    ) {
-
-
-        snowflakes.push({
-
-            x:
-                Math.random() *
-                snowWidth,
-
-
-            y:
-                Math.random() *
-                snowHeight,
-
-
-            radius:
-                Math.random() *
-                2.2 +
-                0.5,
-
-
-            speed:
-                Math.random() *
-                0.8 +
-                0.3,
-
-
-            drift:
-                Math.random() *
-                0.7 -
-                0.35,
-
-
-            opacity:
-                Math.random() *
-                0.65 +
-                0.25,
-
-
-            phase:
-                Math.random() *
-                Math.PI *
-                2
-
-        });
-
-
-    }
-
-}
-
-
-/* =========================================================
-   Draw Snow
-========================================================= */
-
-function drawSnow() {
-
-
-    snowCtx.clearRect(
-        0,
-        0,
-        snowWidth,
-        snowHeight
-    );
-
-
-    for (
-        const snow of snowflakes
-    ) {
-
-
-        snow.phase +=
-            0.008;
-
-
-        snow.x +=
-
-            snow.drift +
-
-            Math.sin(
-                snow.phase
-            ) * 0.15;
-
-
-        snow.y +=
-            snow.speed;
-
-
-        if (
-            snow.y >
-            snowHeight + 10
-        ) {
-
-            snow.y = -10;
-
-
-            snow.x =
-                Math.random() *
-                snowWidth;
-
-        }
-
-
-        if (
-            snow.x >
-            snowWidth + 10
-        ) {
-
-            snow.x = -10;
-
-        }
-
-
-        if (
-            snow.x < -10
-        ) {
-
-            snow.x =
-                snowWidth + 10;
-
-        }
-
-
-        snowCtx.beginPath();
-
-
-        snowCtx.arc(
-            snow.x,
-            snow.y,
-            snow.radius,
-            0,
-            Math.PI * 2
-        );
-
-
-        snowCtx.fillStyle =
-
-            `rgba(
-                255,
-                255,
-                255,
-                ${snow.opacity}
-            )`;
-
-
-        snowCtx.shadowBlur =
-
-            snow.radius > 1.5
-                ? 6
-                : 2;
-
-
-        snowCtx.shadowColor =
-
-            "rgba(255,255,255,0.7)";
-
-
-        snowCtx.fill();
-
     }
 
 
-    snowCtx.shadowBlur = 0;
+    /* =========================================================
+       Progress Update
+    ========================================================= */
 
-
-    requestAnimationFrame(
-        drawSnow
-    );
-
-}
-
-
-window.addEventListener(
-    "resize",
-    resizeSnow
-);
-
-
-resizeSnow();
-
-
-requestAnimationFrame(
-    drawSnow
-);
-
-
-/* =========================================================
-   Touch / Mouse Effect
-========================================================= */
-
-const touchEffect =
-    document.getElementById(
-        "touchEffect"
-    );
-
-
-/* =========================================================
-   Mouse Glow
-========================================================= */
-
-const glow =
-    document.createElement(
-        "div"
-    );
-
-
-glow.className =
-    "touch-glow";
-
-
-touchEffect.appendChild(
-    glow
-);
-
-
-document.addEventListener(
-    "pointermove",
-    event => {
-
-
-        glow.style.left =
-            event.clientX + "px";
-
-
-        glow.style.top =
-            event.clientY + "px";
-
-
-        glow.style.opacity =
-            "1";
-
-
-        glow.style.transform =
-            "scale(1)";
-
-    }
-);
-
-
-/* =========================================================
-   Hide Glow
-========================================================= */
-
-document.addEventListener(
-    "pointerleave",
-    () => {
-
-
-        glow.style.opacity =
-            "0";
-
-
-        glow.style.transform =
-            "scale(0.7)";
-
-    }
-);
-
-
-/* =========================================================
-   Create Ripple
-========================================================= */
-
-function createRipple(
-    x,
-    y
-) {
-
-
-    const ripple =
-        document.createElement(
-            "div"
-        );
-
-
-    ripple.className =
-        "touch-ripple";
-
-
-    ripple.style.left =
-        x + "px";
-
-
-    ripple.style.top =
-        y + "px";
-
-
-    touchEffect.appendChild(
-        ripple
-    );
-
-
-    setTimeout(
+    audio.addEventListener(
+        "timeupdate",
         () => {
 
-            ripple.remove();
+            if (!audio.duration) {
 
-        },
-        900
+                return;
+
+            }
+
+
+            const percent =
+
+                (
+                    audio.currentTime /
+                    audio.duration
+                ) * 100;
+
+
+            progress.style.width =
+                percent + "%";
+
+
+            time.textContent =
+
+                `${formatTime(
+                    audio.currentTime
+                )} / ${formatTime(
+                    audio.duration
+                )}`;
+
+        }
     );
 
 
-    createParticles(
-        x,
-        y
+    /* =========================================================
+       Seek
+    ========================================================= */
+
+    progressContainer.addEventListener(
+        "click",
+        (event) => {
+
+            if (!audio.duration) {
+
+                return;
+
+            }
+
+
+            const rect =
+                progressContainer
+                    .getBoundingClientRect();
+
+
+            const percent =
+
+                (
+                    event.clientX -
+                    rect.left
+                ) / rect.width;
+
+
+            audio.currentTime =
+
+                percent *
+                audio.duration;
+
+        }
     );
 
-}
+
+    /* =========================================================
+       Volume
+    ========================================================= */
+
+    volume.addEventListener(
+        "input",
+        () => {
+
+            audio.volume =
+                Number(volume.value);
+
+        }
+    );
 
 
-/* =========================================================
-   Create Particles
-========================================================= */
+    /* =========================================================
+       Buttons
+    ========================================================= */
 
-function createParticles(
-    x,
-    y
-) {
-
-
-    const count = 10;
+    playBtn.addEventListener(
+        "click",
+        togglePlay
+    );
 
 
-    for (
-        let i = 0;
-        i < count;
-        i++
-    ) {
+    prevBtn.addEventListener(
+        "click",
+        previousSong
+    );
 
 
-        const particle =
-            document.createElement(
-                "div"
-            );
+    nextBtn.addEventListener(
+        "click",
+        nextSong
+    );
 
 
-        particle.className =
-            "touch-particle";
+    /* =========================================================
+       Audio Events
+    ========================================================= */
+
+    audio.addEventListener(
+        "play",
+        updatePlayButton
+    );
 
 
-        particle.style.left =
-            x + "px";
+    audio.addEventListener(
+        "pause",
+        updatePlayButton
+    );
 
 
-        particle.style.top =
-            y + "px";
+    /* =========================================================
+       Auto Next
+    ========================================================= */
+
+    audio.addEventListener(
+        "ended",
+        nextSong
+    );
 
 
-        const angle =
+    /* =========================================================
+       Keyboard
+    ========================================================= */
 
-            Math.random() *
-            Math.PI *
-            2;
-
-
-        const distance =
-
-            Math.random() *
-            80 +
-            30;
+    document.addEventListener(
+        "keydown",
+        (event) => {
 
 
-        const dx =
+            /* Space */
 
-            Math.cos(angle) *
-            distance;
+            if (
+                event.code ===
+                "Space"
+            ) {
 
+                event.preventDefault();
 
-        const dy =
+                togglePlay();
 
-            Math.sin(angle) *
-            distance;
-
-
-        particle.style.setProperty(
-            "--dx",
-            dx + "px"
-        );
+            }
 
 
-        particle.style.setProperty(
-            "--dy",
-            dy + "px"
-        );
+            /* Right */
+
+            if (
+                event.code ===
+                "ArrowRight"
+            ) {
+
+                if (audio.duration) {
+
+                    audio.currentTime =
+                        Math.min(
+                            audio.currentTime + 5,
+                            audio.duration
+                        );
+
+                }
+
+            }
 
 
-        const size =
+            /* Left */
 
-            Math.random() *
-            3 +
-            2;
+            if (
+                event.code ===
+                "ArrowLeft"
+            ) {
 
+                if (audio.duration) {
 
-        particle.style.width =
-            size + "px";
+                    audio.currentTime =
+                        Math.max(
+                            audio.currentTime - 5,
+                            0
+                        );
 
+                }
 
-        particle.style.height =
-            size + "px";
+            }
 
-
-        touchEffect.appendChild(
-            particle
-        );
-
-
-        setTimeout(
-            () => {
-
-                particle.remove();
-
-            },
-            800
-        );
-
-    }
-
-}
+        }
+    );
 
 
-/* =========================================================
-   Pointer Down
-========================================================= */
+    /* =========================================================
+       Initialize
+    ========================================================= */
 
-document.addEventListener(
-    "pointerdown",
-    event => {
+    audio.volume = 0.8;
 
 
-        createRipple(
-            event.clientX,
-            event.clientY
-        );
+    createPlaylist();
 
-    }
-);
+
+    loadSong(
+        0,
+        false
+    );
+
 
 </script>
+
 
 </body>
 
