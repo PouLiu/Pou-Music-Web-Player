@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PouMusic</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #101114;
+            --card: rgba(255, 255, 255, 0.08);
+            --card-hover: rgba(255, 255, 255, 0.13);
+            --text: #ffffff;
+            --subtext: rgba(255, 255, 255, 0.55);
+            --line: rgba(255, 255, 255, 0.1);
+            --accent: #ffffff;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Inter,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            color: var(--text);
+
+            background:
+                radial-gradient(
+                    circle at 20% 10%,
+                    rgba(255, 255, 255, 0.08),
+                    transparent 35%
+                ),
+                radial-gradient(
+                    circle at 80% 90%,
+                    rgba(255, 255, 255, 0.05),
+                    transparent 35%
+                ),
+                var(--bg);
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 40px 20px;
+        }
+
+        /* =========================
+           Main
+        ========================= */
+
+        .app {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .header {
+            margin-bottom: 22px;
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            margin-top: 6px;
+            color: var(--subtext);
+            font-size: 14px;
+        }
+
+        /* =========================
+           Player
+        ========================= */
+
+        .player {
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+
+            padding: 22px;
+
+            border: 1px solid var(--line);
+            border-radius: 24px;
+
+            background: rgba(25, 26, 30, 0.72);
+
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.35);
+
+            margin-bottom: 20px;
+        }
+
+        .now-playing {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .album {
+            width: 64px;
+            height: 64px;
+
+            flex-shrink: 0;
+
+            border-radius: 16px;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            font-size: 26px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(255,255,255,0.18),
+                    rgba(255,255,255,0.04)
+                );
+
+            border: 1px solid rgba(255,255,255,0.1);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        .track-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .track-name {
+            font-size: 18px;
+            font-weight: 600;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-source {
+            margin-top: 4px;
+
+            font-size: 13px;
+            color: var(--subtext);
+        }
+
+        /* =========================
+           Controls
+        ========================= */
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            border: none;
+            outline: none;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-family: inherit;
+
+            transition:
+                transform 0.15s ease,
+                background 0.15s ease,
+                opacity 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn {
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+
+            background: rgba(255,255,255,0.08);
+        }
+
+        .control-btn:hover {
+            background: rgba(255,255,255,0.14);
+        }
+
+        .play-btn {
+            width: 50px;
+            height: 50px;
+
+            border-radius: 50%;
+
+            background: white;
+            color: #111;
+
+            font-size: 19px;
+        }
+
+        .progress-container {
+            flex: 1;
+
+            height: 5px;
+
+            border-radius: 10px;
+
+            background: rgba(255,255,255,0.1);
+
+            cursor: pointer;
+
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0%;
+            height: 100%;
+
+            background: white;
+
+            border-radius: inherit;
+        }
+
+        .time {
+            min-width: 85px;
+
+            text-align: right;
+
+            font-size: 12px;
+
+            color: var(--subtext);
+
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* =========================
+           Playlist
+        ========================= */
+
+        .playlist {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .song {
+            display: flex;
+            align-items: center;
+
+            padding: 13px 15px;
+
+            border-radius: 15px;
+
+            background: rgba(255,255,255,0.035);
+
+            border: 1px solid transparent;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s ease,
+                border-color 0.15s ease,
+                transform 0.15s ease;
+        }
+
+        .song:hover {
+            background: var(--card-hover);
+            transform: translateX(2px);
+        }
+
+        .song.active {
+            background: var(--card);
+            border-color: var(--line);
+        }
+
+        .song-number {
+            width: 35px;
+
+            color: rgba(255,255,255,0.35);
+
+            font-size: 13px;
+
+            font-variant-numeric: tabular-nums;
+        }
+
+        .song-icon {
+            width: 34px;
+            height: 34px;
+
+            border-radius: 10px;
+
+            background: rgba(255,255,255,0.07);
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            margin-right: 12px;
+
+            font-size: 15px;
+        }
+
+        .song-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .song-title {
+            font-size: 14px;
+            font-weight: 500;
+
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .song-type {
+            margin-top: 2px;
+
+            color: var(--subtext);
+
+            font-size: 11px;
+        }
+
+        .song-play {
+            color: rgba(255,255,255,0.45);
+            font-size: 14px;
+        }
+
+        /* =========================
+           Volume
+        ========================= */
+
+        .volume {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .volume-icon {
+            color: rgba(255,255,255,0.5);
+            font-size: 14px;
+        }
+
+        input[type="range"] {
+            width: 90px;
+            height: 4px;
+
+            appearance: none;
+            -webkit-appearance: none;
+
+            border-radius: 10px;
+
+            background: rgba(255,255,255,0.1);
+
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            -webkit-appearance: none;
+
+            width: 12px;
+            height: 12px;
+
+            border-radius: 50%;
+
+            background: white;
+
+            cursor: pointer;
+        }
+
+        /* =========================
+           Footer
+        ========================= */
+
+        .footer {
+            margin-top: 20px;
+
+            text-align: center;
+
+            color: rgba(255,255,255,0.3);
+
+            font-size: 12px;
+        }
+
+        /* =========================
+           Mobile
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 20px 12px;
+            }
+
+            .player {
+                padding: 16px;
+
+                border-radius: 20px;
+            }
+
+            .title {
+                font-size: 25px;
+            }
+
+            .album {
+                width: 55px;
+                height: 55px;
+            }
+
+            .time {
+                display: none;
+            }
+
+            .volume {
+                display: none;
+            }
+
+            .song {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <div class="header">
+        <div class="title">PouMusic</div>
+        <div class="subtitle">
+            Music collection
+        </div>
+    </div>
+
+
+    <!-- =========================
+         Player
+    ========================== -->
+
+    <div class="player">
+
+        <div class="now-playing">
+
+            <div class="album">
+                ♪
+            </div>
+
+            <div class="track-info">
+
+                <div
+                    class="track-name"
+                    id="trackName"
+                >
+                    Select a song
+                </div>
+
+                <div
+                    class="track-source"
+                    id="trackSource"
+                >
+                    PouMusic
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="controls">
+
+            <button
+                class="control-btn"
+                id="prevBtn"
+                title="Previous"
+            >
+                ‹
+            </button>
+
+            <button
+                class="play-btn"
+                id="playBtn"
+                title="Play"
+            >
+                ▶
+            </button>
+
+            <button
+                class="control-btn"
+                id="nextBtn"
+                title="Next"
+            >
+                ›
+            </button>
+
+
+            <div
+                class="progress-container"
+                id="progressContainer"
+            >
+                <div
+                    class="progress"
+                    id="progress"
+                ></div>
+            </div>
+
+
+            <div
+                class="time"
+                id="time"
+            >
+                0:00 / 0:00
+            </div>
+
+
+            <div class="volume">
+
+                <span class="volume-icon">
+                    🔊
+                </span>
+
+                <input
+                    type="range"
+                    id="volume"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.8"
+                >
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         Playlist
+    ========================== -->
+
+    <div
+        class="playlist"
+        id="playlist"
+    ></div>
+
+
+    <div class="footer">
+        PouMusic
+    </div>
+
+</div>
+
+
+<audio id="audio"></audio>
+
+
+<script>
+
+    /*
+     * ============================================
+     * Music List
+     * ============================================
+     *
+     * 如果 PouMusic 文件夹和 index.html
+     * 在同一个仓库中：
+     *
+     * PouMusic/Carefun.ogg
+     *
+     */
+
+    const songs = [
+
+        {
+            name: "Carefun",
+            file: "Carefun.ogg"
+        },
+
+        {
+            name: "Cheerful",
+            file: "Cheerful.ogg"
+        },
+
+        {
+            name: "Chill",
+            file: "Chill.ogg"
+        },
+
+        {
+            name: "Forest",
+            file: "Forest.ogg"
+        },
+
+        {
+            name: "Guess",
+            file: "Guess.ogg"
+        },
+
+        {
+            name: "Happy",
+            file: "Happy.ogg"
+        },
+
+        {
+            name: "Hill",
+            file: "Hill.wav"
+        },
+
+        {
+            name: "Hop",
+            file: "Hop.ogg"
+        },
+
+        {
+            name: "IX",
+            file: "IX.mp3"
+        },
+
+        {
+            name: "Jolly",
+            file: "Jolly.ogg"
+        },
+
+        {
+            name: "Popper",
+            file: "Popper.ogg"
+        },
+
+        {
+            name: "Soft",
+            file: "Soft.ogg"
+        },
+
+        {
+            name: "Swap",
+            file: "Swap.ogg"
+        },
+
+        {
+            name: "Think",
+            file: "Think.ogg"
+        },
+
+        {
+            name: "Tropical",
+            file: "Tropical.ogg"
+        },
+
+        {
+            name: "War 3",
+            file: "War_3.wav"
+        }
+
+    ];
+
+
+    /*
+     * ============================================
+     * Configuration
+     * ============================================
+     */
+
+    const MUSIC_PATH = "PouMusic/";
+
+
+    /*
+     * ============================================
+     * Elements
+     * ============================================
+     */
+
+    const audio = document.getElementById("audio");
+
+    const playBtn =
+        document.getElementById("playBtn");
+
+    const prevBtn =
+        document.getElementById("prevBtn");
+
+    const nextBtn =
+        document.getElementById("nextBtn");
+
+    const progress =
+        document.getElementById("progress");
+
+    const progressContainer =
+        document.getElementById("progressContainer");
+
+    const trackName =
+        document.getElementById("trackName");
+
+    const trackSource =
+        document.getElementById("trackSource");
+
+    const time =
+        document.getElementById("time");
+
+    const volume =
+        document.getElementById("volume");
+
+    const playlist =
+        document.getElementById("playlist");
+
+
+    /*
+     * ============================================
+     * State
+     * ============================================
+     */
+
+    let currentIndex = 0;
+
+
+    /*
+     * ============================================
+     * Helpers
+     * ============================================
+     */
+
+    function formatTime(seconds) {
+
+        if (!isFinite(seconds)) {
+            return "0:00";
+        }
+
+        const minutes =
+            Math.floor(seconds / 60);
+
+        const secs =
+            Math.floor(seconds % 60)
+                .toString()
+                .padStart(2, "0");
+
+        return `${minutes}:${secs}`;
+
+    }
+
+
+    /*
+     * ============================================
+     * Load Song
+     * ============================================
+     */
+
+    function loadSong(index, autoplay = false) {
+
+        currentIndex = index;
+
+        const song = songs[currentIndex];
+
+        audio.src =
+            MUSIC_PATH + song.file;
+
+        trackName.textContent =
+            song.name;
+
+        trackSource.textContent =
+            "PouMusic · " +
+            song.file.split(".").pop().toUpperCase();
+
+        updatePlaylist();
+
+        if (autoplay) {
+
+            audio.play()
+                .then(() => {
+                    updatePlayButton();
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+
+        }
+
+        else {
+
+            updatePlayButton();
+
+        }
+
+    }
+
+
+    /*
+     * ============================================
+     * Playlist UI
+     * ============================================
+     */
+
+    function createPlaylist() {
+
+        playlist.innerHTML = "";
+
+        songs.forEach((song, index) => {
+
+            const item =
+                document.createElement("div");
+
+            item.className = "song";
+
+            item.dataset.index = index;
+
+            item.innerHTML = `
+
+                <div class="song-number">
+                    ${String(index + 1).padStart(2, "0")}
+                </div>
+
+                <div class="song-icon">
+                    ♪
+                </div>
+
+                <div class="song-info">
+
+                    <div class="song-title">
+                        ${song.name}
+                    </div>
+
+                    <div class="song-type">
+                        ${song.file.split(".").pop().toUpperCase()}
+                    </div>
+
+                </div>
+
+                <div class="song-play">
+                    ▶
+                </div>
+
+            `;
+
+            item.addEventListener(
+                "click",
+                () => {
+
+                    loadSong(index, true);
+
+                }
+            );
+
+            playlist.appendChild(item);
+
+        });
+
+        updatePlaylist();
+
+    }
+
+
+    function updatePlaylist() {
+
+        const items =
+            playlist.querySelectorAll(".song");
+
+        items.forEach((item, index) => {
+
+            if (index === currentIndex) {
+                item.classList.add("active");
+            }
+
+            else {
+                item.classList.remove("active");
+            }
+
+        });
+
+    }
+
+
+    /*
+     * ============================================
+     * Play / Pause
+     * ============================================
+     */
+
+    function togglePlay() {
+
+        if (!audio.src) {
+
+            loadSong(currentIndex, true);
+
+            return;
+
+        }
+
+        if (audio.paused) {
+
+            audio.play();
+
+        }
+
+        else {
+
+            audio.pause();
+
+        }
+
+    }
+
+
+    function updatePlayButton() {
+
+        if (audio.paused) {
+
+            playBtn.textContent = "▶";
+
+        }
+
+        else {
+
+            playBtn.textContent = "Ⅱ";
+
+        }
+
+    }
+
+
+    /*
+     * ============================================
+     * Previous / Next
+     * ============================================
+     */
+
+    function previousSong() {
+
+        currentIndex--;
+
+        if (currentIndex < 0) {
+            currentIndex = songs.length - 1;
+        }
+
+        loadSong(currentIndex, true);
+
+    }
+
+
+    function nextSong() {
+
+        currentIndex++;
+
+        if (currentIndex >= songs.length) {
+            currentIndex = 0;
+        }
+
+        loadSong(currentIndex, true);
+
+    }
+
+
+    /*
+     * ============================================
+     * Progress
+     * ============================================
+     */
+
+    audio.addEventListener(
+        "timeupdate",
+        () => {
+
+            if (!audio.duration) {
+                return;
+            }
+
+            const percent =
+                (audio.currentTime /
+                audio.duration) * 100;
+
+            progress.style.width =
+                percent + "%";
+
+            time.textContent =
+                `${formatTime(audio.currentTime)}
+                 / ${formatTime(audio.duration)}`;
+
+        }
+    );
+
+
+    progressContainer.addEventListener(
+        "click",
+        (event) => {
+
+            if (!audio.duration) {
+                return;
+            }
+
+            const rect =
+                progressContainer.getBoundingClientRect();
+
+            const percent =
+                (event.clientX - rect.left) /
+                rect.width;
+
+            audio.currentTime =
+                percent * audio.duration;
+
+        }
+    );
+
+
+    /*
+     * ============================================
+     * Volume
+     * ============================================
+     */
+
+    volume.addEventListener(
+        "input",
+        () => {
+
+            audio.volume =
+                volume.value;
+
+        }
+    );
+
+
+    /*
+     * ============================================
+     * Events
+     * ============================================
+     */
+
+    playBtn.addEventListener(
+        "click",
+        togglePlay
+    );
+
+    prevBtn.addEventListener(
+        "click",
+        previousSong
+    );
+
+    nextBtn.addEventListener(
+        "click",
+        nextSong
+    );
+
+
+    audio.addEventListener(
+        "play",
+        updatePlayButton
+    );
+
+    audio.addEventListener(
+        "pause",
+        updatePlayButton
+    );
+
+
+    /*
+     * 自动播放下一首
+     */
+
+    audio.addEventListener(
+        "ended",
+        nextSong
+    );
+
+
+    /*
+     * ============================================
+     * Keyboard
+     * ============================================
+     */
+
+    document.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (event.code === "Space") {
+
+                event.preventDefault();
+
+                togglePlay();
+
+            }
+
+            if (event.code === "ArrowRight") {
+
+                audio.currentTime += 5;
+
+            }
+
+            if (event.code === "ArrowLeft") {
+
+                audio.currentTime -= 5;
+
+            }
+
+        }
+    );
+
+
+    /*
+     * ============================================
+     * Init
+     * ============================================
+     */
+
+    audio.volume = 0.8;
+
+    createPlaylist();
+
+    loadSong(0, false);
+
+</script>
+
+</body>
+</html>

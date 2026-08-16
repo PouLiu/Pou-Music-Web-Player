@@ -1,0 +1,11 @@
+{
+  "Id": "Pou Client",
+  "DisplayName": "Pou Client",
+  "Author": "Qbutler",
+  "Version": "Dev?",
+  "ManagerVersion": "0.22.14.0",
+  "AssemblyName": "PouClient.dll",
+  "EntryMethod": "PouClient.Startup.Load",
+  "HomePage": "https://space.bilibili.com/1588530690",
+  "Repository": "<fill in or delete>"
+}
